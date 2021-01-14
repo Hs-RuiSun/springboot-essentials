@@ -7,18 +7,16 @@ import com.ruby.sun.domain.RoomReservation;
 import com.ruby.sun.repository.GuestRepository;
 import com.ruby.sun.repository.ReservationRepository;
 import com.ruby.sun.repository.RoomRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 @Service
 public class ReservationService {
-    private RoomRepository roomRepository;
-    private GuestRepository guestRepository;
-    private ReservationRepository reservationRepository;
+    private final RoomRepository roomRepository;
+    private final GuestRepository guestRepository;
+    private final ReservationRepository reservationRepository;
 
-    @Autowired
     public ReservationService(RoomRepository roomRepository, GuestRepository guestRepository, ReservationRepository reservationRepository) {
         this.roomRepository = roomRepository;
         this.guestRepository = guestRepository;
@@ -27,7 +25,6 @@ public class ReservationService {
 
     public List<Reservation> getAllReservations(){
         List<Reservation> list = new ArrayList<>();
-        System.out.println(TimeZone.getDefault());
         reservationRepository.findAll().forEach(list::add);
         return list;
     }
@@ -42,7 +39,7 @@ public class ReservationService {
 
         reservations.forEach(reservation -> {
             Optional<Guest> guestOptional = this.guestRepository.findById(reservation.getGuestId());
-            guestOptional.ifPresentOrElse(guest -> {
+            guestOptional.ifPresent(guest -> {
                 RoomReservation roomReservation = new RoomReservation();
 
                 roomReservation.setFirstName(guest.getFirstName());
@@ -56,7 +53,7 @@ public class ReservationService {
                 roomReservation.setDate(reservation.getCreatedDate());
 
                 roomReservationMap.put(reservation.getId(), roomReservation);
-            }, () -> System.out.println("no guests for this reservation"));
+            });
         });
         return new ArrayList<>(roomReservationMap.values());
     }
