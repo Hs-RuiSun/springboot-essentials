@@ -1,11 +1,9 @@
 package com.ruby.sun.config;
 
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.*;
 
 @Configuration
-@Import(DataSourceConfig.class)
+@Import({DataSourceConfig.class, WebConfig.class})
 @PropertySource("classpath:application.properties")
 public class AppConfig {
 }

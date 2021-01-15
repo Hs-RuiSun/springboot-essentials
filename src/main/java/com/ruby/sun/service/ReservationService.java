@@ -29,6 +29,13 @@ public class ReservationService {
         return list;
     }
 
+    public Reservation saveReservation(Reservation reservation){
+        return reservationRepository.save(reservation);
+    }
+
+    public Reservation getReservation(long reservationId){
+        return reservationRepository.findById(reservationId).orElse(null);
+    }
     public List<RoomReservation> getRoomReservationsAfterDate(Date date){
         Map<Long, RoomReservation> roomReservationMap = new HashMap<>();
         Iterable<Reservation> reservations = this.reservationRepository.findByCreatedDate(date);

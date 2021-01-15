@@ -4,10 +4,8 @@ import com.ruby.sun.domain.Reservation;
 import com.ruby.sun.domain.RoomReservation;
 import com.ruby.sun.service.ReservationService;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
@@ -32,7 +30,13 @@ public class ReservationAPIController {
     }
 
     @GetMapping("/reservations/{id}")
-    public List<RoomReservation> getReservations(@PathVariable(value="date") @DateTimeFormat(pattern = "yyyy-MM-dd") Date date) {
-        return this.reservationService.getRoomReservationsAfterDate(date);
+    public Reservation getReservationById(@PathVariable long id) {
+        return this.reservationService.getReservation(id);
+    }
+
+    @PostMapping(value = "/reservations",
+            produces = { MediaType.APPLICATION_JSON_VALUE}, consumes = {MediaType.APPLICATION_JSON_VALUE })
+    public Reservation saveReservation(@RequestBody Reservation reservation){
+        return this.reservationService.saveReservation(reservation);
     }
 }
