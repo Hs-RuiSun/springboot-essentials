@@ -1,9 +1,7 @@
-package com.ruby.sun;
+package com.ruby.sun.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ruby.sun.config.AppConfig;
-import com.ruby.sun.config.DataSourceConfig;
-import com.ruby.sun.config.WebConfig;
 import com.ruby.sun.domain.Reservation;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,25 +31,26 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {AppConfig.class})
 @WebAppConfiguration
-@ComponentScan //those two could move to Configuration class for common spring project
+@ComponentScan("com.ruby.sun") //those two could move to Configuration class for common spring project
 @EnableWebMvc //
-public class ReservationControllerMockMVCTest {
+public class ControllerMockMVCTest {
     @Autowired
-    private WebApplicationContext wac;
+    private WebApplicationContext webApplicationContext;
     @Autowired
     private ObjectMapper objectMapper;
     private MockMvc mockMvc;
     @Before
     public void setup() {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
     }
 
     @Test
     public void testApplicationContext(){
-        assertNotNull(wac.getServletContext());
-        ServletContext servletContext = wac.getServletContext();
+        assertNotNull(webApplicationContext.getServletContext());
+        ServletContext servletContext = webApplicationContext.getServletContext();
         assertTrue(servletContext instanceof MockServletContext);
-        assertNotNull(wac.getBean("reservationController"));
+        assertNotNull(webApplicationContext.getBean("reservationController"));
+        assertNotNull(webApplicationContext.getBean("reservationService")); //the full Spring application context is started but without the server
     }
 
     @Test
@@ -63,17 +62,21 @@ public class ReservationControllerMockMVCTest {
 
     @Test
     public void testRESTAPIGETWithPathVariable() throws Exception {
-        this.mockMvc.perform(get("/api/reservations/{id}", 1))
+        this.mockMvc.perform(get("/api/reservations/{id}", 1)
+                                .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.guestId").value(200));
     }
 
     @Test
     public void testRESTAPIGETWithParameters() throws Exception {
         this.mockMvc.perform(get("/api/reservations")
-                                .param("date[gte]", "2021-01-01"))
+                                .param("date[gte]", "2021-01-01")
+                                .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].guestId").value(200));
     }
 
     @Test

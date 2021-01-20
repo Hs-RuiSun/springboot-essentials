@@ -20,7 +20,7 @@ import java.util.List;
 public class ReservationController {
     private ReservationService reservationService;
 
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+    private final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
     public ReservationController(ReservationService reservationService){
         this.reservationService = reservationService;
